@@ -36,7 +36,7 @@ TK_3RD_ROOT   = joinPath(TK_ROOT, '3rd')
 TK_TOOLS_ROOT = joinPath(TK_ROOT, 'tools')
 TK_DEMO_ROOT  = joinPath(TK_ROOT, 'demos')
 GTEST_ROOT    = joinPath(TK_ROOT, '3rd/gtest/googletest')
-AWTK_STATIC_LIBS=['awtk_global', 'extwidgets', 'widgets', 'base', 'gpinyin', 'streams', 'conf_io', 'hal', 'csv', 'ubjson', 'compressors', 'fribidi', 'miniz', 'tkc_static', 'linebreak']
+AWTK_STATIC_LIBS=['awtk_global', 'extwidgets', 'widgets', 'base', 'gpinyin', 'streams', 'conf_io', 'hal', 'csv', 'ubjson', 'compressors', 'fribidi', 'miniz', 'tkc_static', 'linebreak', 'mbedtls']
 
 #INPUT_ENGINE='null'
 #INPUT_ENGINE='spinyin'

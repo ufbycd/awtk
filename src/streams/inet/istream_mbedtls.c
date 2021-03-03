@@ -31,9 +31,9 @@ static int32_t tk_istream_mbedtls_read(tk_istream_t* stream, uint8_t* buff, uint
   int32_t ret = 0;
   tk_istream_mbedtls_t* istream_mbedtls = TK_ISTREAM_MBEDTLS(stream);
 
-  ret = recv(istream_mbedtls->sock, buff, max_size, 0);
+  ret = mbedtls_ssl_read(istream_mbedtls->ssl, buff, max_size);
   if (ret <= 0) {
-    if (errno != EAGAIN) {
+    if (ret != MBEDTLS_ERR_SSL_WANT_READ && ret != MBEDTLS_ERR_SSL_WANT_WRITE) {
       perror("recv");
       istream_mbedtls->is_broken = TRUE;
     }
@@ -67,16 +67,18 @@ static const object_vtable_t s_tk_istream_mbedtls_vtable = {.type = "tk_istream_
                                                         .size = sizeof(tk_istream_mbedtls_t),
                                                         .get_prop = tk_istream_mbedtls_get_prop};
 
-tk_istream_t* tk_istream_mbedtls_create(int sock) {
+tk_istream_t* tk_istream_mbedtls_create(mbedtls_ssl_context* ssl) {
   object_t* obj = NULL;
+  mbedtls_net_context* bio = NULL;
   tk_istream_mbedtls_t* istream_mbedtls = NULL;
-  return_value_if_fail(sock >= 0, NULL);
+  return_value_if_fail(ssl != NULL, NULL);
+  bio = (mbedtls_net_context*)(ssl->p_bio);
 
   obj = object_create(&s_tk_istream_mbedtls_vtable);
   istream_mbedtls = TK_ISTREAM_MBEDTLS(obj);
   return_value_if_fail(istream_mbedtls != NULL, NULL);
 
-  istream_mbedtls->sock = sock;
+  istream_mbedtls->sock = bio->fd;
   TK_ISTREAM(obj)->read = tk_istream_mbedtls_read;
   TK_ISTREAM(obj)->wait_for_data = tk_istream_mbedtls_wait_for_data;
 

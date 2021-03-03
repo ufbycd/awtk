@@ -31,9 +31,9 @@ static int32_t tk_ostream_mbedtls_write(tk_ostream_t* stream, const uint8_t* buf
   int32_t ret = 0;
   tk_ostream_mbedtls_t* ostream_mbedtls = TK_OSTREAM_MBEDTLS(stream);
 
-  ret = send(ostream_mbedtls->sock, buff, max_size, 0);
+  ret = mbedtls_ssl_write(ostream_mbedtls->ssl, buff, max_size);
   if (ret <= 0) {
-    if (errno != EAGAIN && errno != 0) {
+    if( ret != MBEDTLS_ERR_SSL_WANT_READ && ret != MBEDTLS_ERR_SSL_WANT_WRITE ) {
       perror("send");
       ostream_mbedtls->is_broken = TRUE;
     }
@@ -61,16 +61,18 @@ static const object_vtable_t s_tk_ostream_mbedtls_vtable = {.type = "tk_ostream_
                                                         .size = sizeof(tk_ostream_mbedtls_t),
                                                         .get_prop = tk_ostream_mbedtls_get_prop};
 
-tk_ostream_t* tk_ostream_mbedtls_create(int sock) {
+tk_ostream_t* tk_ostream_mbedtls_create(mbedtls_ssl_context* ssl) {
   object_t* obj = NULL;
+  mbedtls_net_context* bio = NULL;
   tk_ostream_mbedtls_t* ostream_mbedtls = NULL;
-  return_value_if_fail(sock >= 0, NULL);
+  return_value_if_fail(ssl != NULL, NULL);
+  bio = (mbedtls_net_context*)(ssl->p_bio);
 
   obj = object_create(&s_tk_ostream_mbedtls_vtable);
   ostream_mbedtls = TK_OSTREAM_MBEDTLS(obj);
   return_value_if_fail(ostream_mbedtls != NULL, NULL);
 
-  ostream_mbedtls->sock = sock;
+  ostream_mbedtls->sock = bio->fd; 
   TK_OSTREAM(obj)->write = tk_ostream_mbedtls_write;
 
   return TK_OSTREAM(obj);

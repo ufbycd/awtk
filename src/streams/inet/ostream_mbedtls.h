@@ -24,6 +24,7 @@
 
 #include "tkc/fs.h"
 #include "tkc/ostream.h"
+#include "streams/inet/mbedtls_helper.h"
 
 BEGIN_C_DECLS
 
@@ -42,6 +43,7 @@ struct _tk_ostream_mbedtls_t {
 
   int sock;
   bool_t is_broken;
+  mbedtls_ssl_context* ssl;
 };
 
 /**
@@ -49,12 +51,12 @@ struct _tk_ostream_mbedtls_t {
  *
  * 创建ostream对象。
  *
- * @param {int} sock socket.
+ * @param {mbedtls_ssl_context*} ssl ssl对象。
  *
  * @return {tk_ostream_t*} 返回ostream对象。
  *
  */
-tk_ostream_t* tk_ostream_mbedtls_create(int sock);
+tk_ostream_t* tk_ostream_mbedtls_create(mbedtls_ssl_context* ssl);
 
 tk_ostream_mbedtls_t* tk_ostream_mbedtls_cast(tk_ostream_t* s);
 #define TK_OSTREAM_MBEDTLS(obj) tk_ostream_mbedtls_cast((tk_ostream_t*)(obj))
