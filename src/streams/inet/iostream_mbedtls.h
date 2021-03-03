@@ -41,16 +41,9 @@ typedef struct _tk_iostream_mbedtls_t tk_iostream_mbedtls_t;
 struct _tk_iostream_mbedtls_t {
   tk_iostream_t iostream;
 
-  int sock;
+  mbedtls_ctx_t* mbedtls; 
   tk_istream_t* istream;
   tk_ostream_t* ostream;
-
-  mbedtls_net_context server_fd;
-  mbedtls_entropy_context entropy;
-  mbedtls_ctr_drbg_context ctr_drbg;
-  mbedtls_ssl_context ssl;
-  mbedtls_ssl_config conf;
-  mbedtls_x509_crt cacert;
 };
 
 /**
@@ -58,13 +51,13 @@ struct _tk_iostream_mbedtls_t {
  *
  * 创建iostream对象。
  *
- * @param {int} sock socket。
+ * @param {mbedtls_ctx_t*} ctx ssl。
  *
  * @return {tk_iostream_t*} 返回iostream对象。
  *
  */
-tk_iostream_t* tk_iostream_mbedtls_connect(const char* host, int port, const unsigned char* cas_pem,
-                                           uint32_t cas_pem_len);
+tk_iostream_t* tk_iostream_mbedtls_create(mbedtls_ctx_t* mbedtls);
+
 
 #define TK_IOSTREAM_MBEDTLS(obj) ((tk_iostream_mbedtls_t*)(obj))
 

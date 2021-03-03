@@ -64,4 +64,20 @@
 #include "mbedtls/memory_buffer_alloc.h"
 #endif
 
+#include "tkc/types_def.h"
+
+struct _mbedtls_ctx_t;
+typedef struct _mbedtls_ctx_t mbedtls_ctx_t;
+
+typedef ret_t (*mbedtls_ctx_destroy_t)(mbedtls_ctx_t* ctx);
+
+struct _mbedtls_ctx_t {
+  int32_t sock;
+  mbedtls_ssl_context ssl;
+  mbedtls_ctx_destroy_t destroy;
+};
+
+#define DEBUG_LEVEL 0
+void mbedtls_awtk_debug(void* ctx, int level, const char* file, int line, const char* str);
+
 #endif /* MBEDTLS_PROGRAMS_SSL_SSL_TEST_LIB_H */
