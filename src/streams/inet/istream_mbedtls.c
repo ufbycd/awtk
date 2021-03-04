@@ -1,9 +1,9 @@
 ﻿/**
- * File:   istream_mbedtls.h
+ * File:   istream_mbedtls.c
  * Author: AWTK Develop Team
- * Brief:  input stream base on socket
+ * Brief:  input stream base on mbedtls 
  *
- * Copyright (c) 2019 - 2021  Guangzhou ZHIYUAN Electronics Co.,Ltd.
+ * Copyright (c) 2021 - 2021  Guangzhou ZHIYUAN Electronics Co.,Ltd.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,7 +15,7 @@
 /**
  * History:
  * ================================================================
- * 2019-09-05 Li XianJing <xianjimli@hotmail.com> created
+ * 2021-03-04 Li XianJing <xianjimli@hotmail.com> created
  *
  */
 
@@ -78,6 +78,7 @@ tk_istream_t* tk_istream_mbedtls_create(mbedtls_ssl_context* ssl) {
   istream_mbedtls = TK_ISTREAM_MBEDTLS(obj);
   return_value_if_fail(istream_mbedtls != NULL, NULL);
 
+  istream_mbedtls->ssl = ssl;
   istream_mbedtls->sock = bio->fd;
   TK_ISTREAM(obj)->read = tk_istream_mbedtls_read;
   TK_ISTREAM(obj)->wait_for_data = tk_istream_mbedtls_wait_for_data;

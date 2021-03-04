@@ -1,9 +1,9 @@
 ﻿/**
  * File:   iostream_mbedtls.c
  * Author: AWTK Develop Team
- * Brief:  input stream base on socket
+ * Brief:  iostream base on mbedtls 
  *
- * Copyright (c) 2019 - 2021  Guangzhou ZHIYUAN Electronics Co.,Ltd.
+ * Copyright (c) 2021 - 2021  Guangzhou ZHIYUAN Electronics Co.,Ltd.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,7 +15,7 @@
 /**
  * History:
  * ================================================================
- * 2019-09-05 Li XianJing <xianjimli@hotmail.com> created
+ * 2021-03-04 Li XianJing <xianjimli@hotmail.com> created
  *
  */
 
@@ -34,7 +34,7 @@ static ret_t tk_iostream_mbedtls_get_prop(object_t* obj, const char* name, value
   tk_iostream_mbedtls_t* iostream_mbedtls = TK_IOSTREAM_MBEDTLS(obj);
 
   if (tk_str_eq(name, TK_STREAM_PROP_FD)) {
-    value_set_int(v, iostream_mbedtls->mbedtls->sock);
+    value_set_int(v, iostream_mbedtls->conn->sock);
     return RET_OK;
   } else if (tk_str_eq(name, TK_STREAM_PROP_IS_OK)) {
     bool_t is_ok1 =
@@ -53,8 +53,8 @@ static ret_t tk_iostream_mbedtls_get_prop(object_t* obj, const char* name, value
 static ret_t tk_iostream_mbedtls_on_destroy(object_t* obj) {
   tk_iostream_mbedtls_t* iostream_mbedtls = TK_IOSTREAM_MBEDTLS(obj);
 
-  if(iostream_mbedtls->mbedtls != NULL && iostream_mbedtls->mbedtls->destroy != NULL) {
-    iostream_mbedtls->mbedtls->destroy(iostream_mbedtls->mbedtls);
+  if(iostream_mbedtls->conn != NULL) {
+    mbedtls_conn_destroy(iostream_mbedtls->conn);
   }
 
   OBJECT_UNREF(iostream_mbedtls->istream);
@@ -82,23 +82,19 @@ static tk_ostream_t* tk_iostream_mbedtls_get_ostream(tk_iostream_t* stream) {
   return iostream_mbedtls->ostream;
 }
 
-tk_iostream_t* tk_iostream_mbedtls_create(mbedtls_ctx_t* mbedtls) {
+tk_iostream_t* tk_iostream_mbedtls_create(mbedtls_conn_t* conn) {
   object_t* obj = NULL;
   tk_iostream_mbedtls_t* iostream_mbedtls = NULL;
-  return_value_if_fail(mbedtls != NULL, NULL);
+  return_value_if_fail(conn != NULL, NULL);
   obj = object_create(&s_tk_iostream_mbedtls_vtable);
   iostream_mbedtls = TK_IOSTREAM_MBEDTLS(obj);
   return_value_if_fail(iostream_mbedtls != NULL, NULL);
 
-  iostream_mbedtls->mbedtls = mbedtls;
-  iostream_mbedtls->istream = tk_istream_mbedtls_create(&(mbedtls->ssl));
-  iostream_mbedtls->ostream = tk_ostream_mbedtls_create(&(mbedtls->ssl));
+  iostream_mbedtls->conn = conn;
+  iostream_mbedtls->istream = tk_istream_mbedtls_create(&(conn->ssl));
+  iostream_mbedtls->ostream = tk_ostream_mbedtls_create(&(conn->ssl));
   TK_IOSTREAM(obj)->get_istream = tk_iostream_mbedtls_get_istream;
   TK_IOSTREAM(obj)->get_ostream = tk_iostream_mbedtls_get_ostream;
 
   return TK_IOSTREAM(obj);
-error:
-  OBJECT_UNREF(obj);
-
-  return NULL;
 }

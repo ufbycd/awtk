@@ -66,18 +66,25 @@
 
 #include "tkc/types_def.h"
 
-struct _mbedtls_ctx_t;
-typedef struct _mbedtls_ctx_t mbedtls_ctx_t;
+struct _mbedtls_conn_t;
+typedef struct _mbedtls_conn_t mbedtls_conn_t;
 
-typedef ret_t (*mbedtls_ctx_destroy_t)(mbedtls_ctx_t* ctx);
+typedef ret_t (*mbedtls_conn_destroy_t)(mbedtls_conn_t* conn);
 
-struct _mbedtls_ctx_t {
+struct _mbedtls_conn_t {
   int32_t sock;
   mbedtls_ssl_context ssl;
-  mbedtls_ctx_destroy_t destroy;
+  mbedtls_conn_destroy_t destroy;
 };
 
+ret_t mbedtls_conn_destroy(mbedtls_conn_t* conn);
+
 #define DEBUG_LEVEL 0
+
+#ifndef TK_MBEDTLS_PERS
+#define TK_MBEDTLS_PERS "awtk_pers"
+#endif/*TK_MBEDTLS_PERS*/
+
 void mbedtls_awtk_debug(void* ctx, int level, const char* file, int line, const char* str);
 
 #endif /* MBEDTLS_PROGRAMS_SSL_SSL_TEST_LIB_H */

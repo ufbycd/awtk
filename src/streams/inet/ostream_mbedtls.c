@@ -1,9 +1,9 @@
 ﻿/**
- * File:   ostream_mbedtls.h
+ * File:   ostream_mbedtls.c
  * Author: AWTK Develop Team
- * Brief:  input stream base on socket
+ * Brief:  output stream base on mbedtls 
  *
- * Copyright (c) 2019 - 2021  Guangzhou ZHIYUAN Electronics Co.,Ltd.
+ * Copyright (c) 2021 - 2021  Guangzhou ZHIYUAN Electronics Co.,Ltd.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,7 +15,7 @@
 /**
  * History:
  * ================================================================
- * 2019-09-05 Li XianJing <xianjimli@hotmail.com> created
+ * 2021-03-04 Li XianJing <xianjimli@hotmail.com> created
  *
  */
 
@@ -24,7 +24,6 @@
 #endif /*WIN32_LEAN_AND_MEAN*/
 
 #include "tkc/mem.h"
-#include "tkc/socket_helper.h"
 #include "streams/inet/ostream_mbedtls.h"
 
 static int32_t tk_ostream_mbedtls_write(tk_ostream_t* stream, const uint8_t* buff, uint32_t max_size) {
@@ -72,6 +71,7 @@ tk_ostream_t* tk_ostream_mbedtls_create(mbedtls_ssl_context* ssl) {
   ostream_mbedtls = TK_OSTREAM_MBEDTLS(obj);
   return_value_if_fail(ostream_mbedtls != NULL, NULL);
 
+  ostream_mbedtls->ssl = ssl;
   ostream_mbedtls->sock = bio->fd; 
   TK_OSTREAM(obj)->write = tk_ostream_mbedtls_write;
 

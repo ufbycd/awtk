@@ -1,9 +1,9 @@
 ﻿/**
  * File:   iostream_mbedtls.h
  * Author: AWTK Develop Team
- * Brief:  input stream base on mbedtls
+ * Brief:  iostream base on mbedtls 
  *
- * Copyright (c) 2019 - 2021  Guangzhou ZHIYUAN Electronics Co.,Ltd.
+ * Copyright (c) 2021 - 2021  Guangzhou ZHIYUAN Electronics Co.,Ltd.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,14 +15,13 @@
 /**
  * History:
  * ================================================================
- * 2021-01-04 Li XianJing <xianjimli@hotmail.com> created
+ * 2021-03-04 Li XianJing <xianjimli@hotmail.com> created
  *
  */
 
 #ifndef TK_IOSTREAM_MBEDTLS_H
 #define TK_IOSTREAM_MBEDTLS_H
 
-#include "tkc/fs.h"
 #include "tkc/iostream.h"
 #include "streams/inet/mbedtls_helper.h"
 
@@ -41,7 +40,7 @@ typedef struct _tk_iostream_mbedtls_t tk_iostream_mbedtls_t;
 struct _tk_iostream_mbedtls_t {
   tk_iostream_t iostream;
 
-  mbedtls_ctx_t* mbedtls; 
+  mbedtls_conn_t* conn; 
   tk_istream_t* istream;
   tk_ostream_t* ostream;
 };
@@ -51,12 +50,12 @@ struct _tk_iostream_mbedtls_t {
  *
  * 创建iostream对象。
  *
- * @param {mbedtls_ctx_t*} ctx ssl。
+ * @param {mbedtls_conn_t*} conn ssl连接。
  *
  * @return {tk_iostream_t*} 返回iostream对象。
  *
  */
-tk_iostream_t* tk_iostream_mbedtls_create(mbedtls_ctx_t* mbedtls);
+tk_iostream_t* tk_iostream_mbedtls_create(mbedtls_conn_t* conn);
 
 
 #define TK_IOSTREAM_MBEDTLS(obj) ((tk_iostream_mbedtls_t*)(obj))
@@ -64,3 +63,4 @@ tk_iostream_t* tk_iostream_mbedtls_create(mbedtls_ctx_t* mbedtls);
 END_C_DECLS
 
 #endif /*TK_IOSTREAM_MBEDTLS_H*/
+

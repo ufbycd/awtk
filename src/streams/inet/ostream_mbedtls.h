@@ -1,9 +1,9 @@
 ﻿/**
  * File:   ostream_mbedtls.h
  * Author: AWTK Develop Team
- * Brief:  input stream base on socket
+ * Brief:  output stream base on mbedtls 
  *
- * Copyright (c) 2019 - 2021  Guangzhou ZHIYUAN Electronics Co.,Ltd.
+ * Copyright (c) 2021 - 2021  Guangzhou ZHIYUAN Electronics Co.,Ltd.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,14 +15,13 @@
 /**
  * History:
  * ================================================================
- * 2019-09-05 Li XianJing <xianjimli@hotmail.com> created
+ * 2021-03-04 Li XianJing <xianjimli@hotmail.com> created
  *
  */
 
 #ifndef TK_OSTREAM_MBEDTLS_H
 #define TK_OSTREAM_MBEDTLS_H
 
-#include "tkc/fs.h"
 #include "tkc/ostream.h"
 #include "streams/inet/mbedtls_helper.h"
 

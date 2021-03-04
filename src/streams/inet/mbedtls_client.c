@@ -2,13 +2,13 @@
 #include "tkc/utils.h"
 #include "mbedtls_client.h"
 
-static ret_t mbedtls_client_destroy(mbedtls_ctx_t* ctx) {
-  mbedtls_client_t* client = (mbedtls_client_t*)ctx;
+static ret_t mbedtls_conn_client_destroy(mbedtls_conn_t* conn) {
+  mbedtls_conn_client_t* client = (mbedtls_conn_client_t*)conn;
 
-  mbedtls_ssl_close_notify(&(ctx->ssl));
+  mbedtls_ssl_close_notify(&(conn->ssl));
   mbedtls_net_free(&(client->server_fd));
   mbedtls_x509_crt_free(&(client->cacert));
-  mbedtls_ssl_free(&(ctx->ssl));
+  mbedtls_ssl_free(&(conn->ssl));
   mbedtls_ssl_config_free(&(client->conf));
   mbedtls_ctr_drbg_free(&(client->ctr_drbg));
   mbedtls_entropy_free(&(client->entropy));
@@ -16,17 +16,19 @@ static ret_t mbedtls_client_destroy(mbedtls_ctx_t* ctx) {
   return RET_OK;
 }
 
-mbedtls_ctx_t* mbedtls_client_create(const char* host, const char* port, const uint8_t* cas_pem,
+mbedtls_conn_t* mbedtls_conn_client_create(const char* host, const char* port, const uint8_t* cas_pem,
                                      uint32_t cas_pem_len) {
  int ret = 0;
  int flags = 0;
- mbedtls_ctx_t* ctx = NULL;
- const char* pers = "awtk_client";
- mbedtls_client_t* client = NULL;
+ mbedtls_conn_t* conn = NULL;
+ const char* pers = TK_MBEDTLS_PERS;
+ mbedtls_conn_client_t* client = NULL;
  return_value_if_fail(host != NULL && port != NULL, NULL);
- client = TKMEM_ZALLOC(mbedtls_client_t);
+ client = TKMEM_ZALLOC(mbedtls_conn_client_t);
  return_value_if_fail(client != NULL, NULL);
- ctx = (mbedtls_ctx_t*)client;
+ conn = (mbedtls_conn_t*)client;
+
+ conn->destroy = mbedtls_conn_client_destroy;
 
 #if defined(MBEDTLS_DEBUG_C)
   mbedtls_debug_set_threshold(DEBUG_LEVEL);
@@ -36,7 +38,7 @@ mbedtls_ctx_t* mbedtls_client_create(const char* host, const char* port, const u
    * 0. Initialize the RNG and the session data
    */
   mbedtls_net_init(&(client->server_fd));
-  mbedtls_ssl_init(&(ctx->ssl));
+  mbedtls_ssl_init(&(conn->ssl));
   mbedtls_ssl_config_init(&(client->conf));
   mbedtls_x509_crt_init(&(client->cacert));
   mbedtls_ctr_drbg_init(&(client->ctr_drbg));
@@ -100,24 +102,24 @@ mbedtls_ctx_t* mbedtls_client_create(const char* host, const char* port, const u
   mbedtls_ssl_conf_rng(&(client->conf), mbedtls_ctr_drbg_random, &(client->ctr_drbg));
   mbedtls_ssl_conf_dbg(&(client->conf), mbedtls_awtk_debug, NULL);
 
-  if ((ret = mbedtls_ssl_setup(&(ctx->ssl), &(client->conf))) != 0) {
+  if ((ret = mbedtls_ssl_setup(&(conn->ssl), &(client->conf))) != 0) {
     log_debug(" failed\n  ! mbedtls_ssl_setup returned %d\n\n", ret);
     goto error;
   }
 
-  if ((ret = mbedtls_ssl_set_hostname(&(ctx->ssl), host)) != 0) {
+  if ((ret = mbedtls_ssl_set_hostname(&(conn->ssl), host)) != 0) {
     log_debug(" failed\n  ! mbedtls_ssl_set_hostname returned %d\n\n", ret);
     goto error;
   }
 
-  mbedtls_ssl_set_bio(&(ctx->ssl), &(client->server_fd), mbedtls_net_send, mbedtls_net_recv, NULL);
+  mbedtls_ssl_set_bio(&(conn->ssl), &(client->server_fd), mbedtls_net_send, mbedtls_net_recv, NULL);
 
   /*
    * 4. Handshake
    */
   log_debug("  . Performing the SSL/TLS handshake...");
 
-  while ((ret = mbedtls_ssl_handshake(&(ctx->ssl))) != 0) {
+  while ((ret = mbedtls_ssl_handshake(&(conn->ssl))) != 0) {
     if (ret != MBEDTLS_ERR_SSL_WANT_READ && ret != MBEDTLS_ERR_SSL_WANT_WRITE) {
       log_debug(" failed\n  ! mbedtls_ssl_handshake returned -0x%x\n\n", (unsigned int)-ret);
       goto error;
@@ -132,7 +134,7 @@ mbedtls_ctx_t* mbedtls_client_create(const char* host, const char* port, const u
   log_debug("  . Verifying peer X.509 certificate...");
 
   /* In real life, we probably want to bail out when ret != 0 */
-  if ((flags = mbedtls_ssl_get_verify_result(&(ctx->ssl))) != 0) {
+  if ((flags = mbedtls_ssl_get_verify_result(&(conn->ssl))) != 0) {
     char vrfy_buf[512];
     log_debug(" failed\n");
     mbedtls_x509_crt_verify_info(vrfy_buf, sizeof(vrfy_buf), "  ! ", flags);
@@ -140,9 +142,9 @@ mbedtls_ctx_t* mbedtls_client_create(const char* host, const char* port, const u
   } else {
     log_debug(" ok\n");
   }
-  return ctx;
+  return conn;
 error:
-  mbedtls_client_destroy(ctx);
+  mbedtls_conn_client_destroy(conn);
 
   return NULL;
 }
