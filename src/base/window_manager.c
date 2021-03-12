@@ -101,8 +101,11 @@ static ret_t window_manager_back_to_win_sync(widget_t* widget, widget_t* target)
   top = wins.size > 0 ? WIDGET(darray_pop(&wins)) : NULL;
   for (k = 0; k < wins.size; k++) {
     widget_t* iter = WIDGET(wins.elms[k]);
-    assert(!widget_is_dialog(iter));
-    window_manager_close_window_force(widget, iter);
+    if (widget_is_dialog(iter) && dialog_is_modal(iter)) { 
+      dialog_quit(iter, DIALOG_QUIT_NONE);
+    } else {
+      window_manager_close_window_force(widget, iter);
+    }
   }
   darray_deinit(&wins);
 
@@ -576,7 +579,8 @@ widget_t* window_manager_find_target(widget_t* widget, void* win, xy_t x, xy_t y
     return iter;
   }
 
-  if (widget_is_dialog(iter) || (widget_is_popup(iter) && widget_is_opened_popup(iter))) {
+  if ((widget_is_dialog(iter) && widget_is_opened_dialog(iter)) ||
+      (widget_is_popup(iter) && widget_is_opened_popup(iter))) {
     return iter;
   }
   WIDGET_FOR_EACH_CHILD_END()
@@ -689,12 +693,15 @@ ret_t window_manager_end_wait_pointer_cursor(widget_t* widget) {
 ret_t window_manager_close_all(widget_t* widget) {
   return_value_if_fail(widget != NULL, RET_BAD_PARAMS);
 
-  WIDGET_FOR_EACH_CHILD_BEGIN_R(widget, iter, i)
-  if (iter->emitter != NULL) {
-    emitter_disable(iter->emitter);
-  }
-  window_manager_close_window_force(widget, iter);
-  WIDGET_FOR_EACH_CHILD_END();
+  do {
+    uint32_t nr = widget_count_children(widget);
+    if (nr > 0) {
+      widget_t* win = widget_get_child(widget, nr - 1);
+      window_manager_close_window_force(widget, win);
+    } else {
+      break;
+    }
+  } while (TRUE);
 
   return RET_OK;
 }

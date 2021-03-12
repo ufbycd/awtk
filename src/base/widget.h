@@ -1749,6 +1749,16 @@ bool_t widget_is_popup(widget_t* widget);
 bool_t widget_is_overlay(widget_t* widget);
 
 /**
+ * @method widget_is_opened_dialog
+ * 检查控件弹出对话框控件是否已经打开了（而非挂起状态）。
+ *
+ * @annotation ["scriptable"]
+ * @param {widget_t*} widget widget对象。
+ * @return {bool_t} 返回FALSE表示不是，否则表示是。
+ */
+bool_t widget_is_opened_dialog(widget_t* widget);
+
+/**
  * @method widget_is_opened_popup
  * 检查控件弹出窗口控件是否已经打开了（而非挂起状态）。
  *
@@ -1929,6 +1939,16 @@ ret_t widget_remove_timer(widget_t* widget, uint32_t timer_id);
  * @return {uint32_t} 返回idle的ID，TK_INVALID_ID表示失败。
  */
 uint32_t widget_add_idle(widget_t* widget, idle_func_t on_idle);
+
+/**
+ * @method widget_remove_idle
+ * 删除指定的idle。
+ * @param {widget_t*} widget 控件对象。
+ * @param {uint32_t} idle_id idleID。
+ *
+ * @return {ret_t} 返回RET_OK表示成功，否则表示失败。
+ */
+ret_t widget_remove_idle(widget_t* widget, uint32_t idle_id);
 
 /**
  * @method widget_load_image

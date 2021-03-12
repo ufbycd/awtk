@@ -796,9 +796,8 @@ static ret_t on_screen_saver(void* ctx, event_t* e) {
 }
 
 static ret_t on_key_record_play_events(void* ctx, event_t* e) {
-#ifdef WITH_EVENT_RECORDER_PLAYER
   key_event_t* evt = (key_event_t*)e;
-
+#ifdef WITH_EVENT_RECORDER_PLAYER
   if (evt->key == TK_KEY_F5) {
     event_recorder_player_start_record("event_log.bin");
     return RET_STOP;
@@ -822,7 +821,9 @@ static ret_t on_key_record_play_events(void* ctx, event_t* e) {
     return RET_STOP;
   }
 #endif /*WITH_EVENT_RECORDER_PLAYER*/
-
+  if (evt->key == TK_KEY_WHEEL) {
+    log_debug("TK_KEY_WHEEL_UP\r\n");
+  }
   return RET_OK;
 }
 
@@ -840,6 +841,8 @@ static ret_t on_key_back_or_back_to_home(void* ctx, event_t* e) {
     window_manager_back_to(WIDGET(ctx), "main");
 
     return RET_STOP;
+  } else if (evt->key == TK_KEY_WHEEL) {
+    log_debug("TK_KEY_WHEEL_DOWN\r\n");
   }
 
   return RET_OK;

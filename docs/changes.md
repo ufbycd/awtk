@@ -1,11 +1,99 @@
 # 最新动态
 
+2020/03/13
+ * 修复 label\_get\_text\_line\_max\_w 接口在tr\_text属性为空调用失败的问题(感谢雨欣提供补丁)
+
+2020/03/10
+ * 增加输入类型INPUT\_ASCII，用于输入纯英文字符。
+ * 修复font\_manager\_unload\_font在OpenGL模式下不能卸载字体的问题。
+ * 修复dialog\_info等内置对话框显示翻译文本时label大小异常的问题(感谢雨欣提供补丁)
+
+2020/03/07
+ * 用WITH\_SDL代替SDL2，没有必要同时使用两个宏。
+ * 完善window\_manager\_back\_to\_home\_async，处理遇到模态对话框时触发assert的问题。
+ * 修复window\_manager\_default vtable初始化顺序。
+
+2020/03/06
+ * 完善build.json，支持多主题。
+ * 完善编译脚本，支持rpath。
+
+2020/03/04
+ * 修复在 mac 上面的 OpenGL 模式下 lcd 旋转窗口动画的问题 （感谢智明提供补丁）
+ * 修改list\_view设置scroll\_bar\_mobile的虚拟高最低为widget高度（感谢智明提供补丁） 
+ * 增加右键和中键的触发事件（在 demoui 中加入了点击中键会打印信息出来测试，右键的话还会触发 EVT\_CONTEXT\_MENU 事件，中键会触发 EVT\_KEY\_UP/DOWN 事件) （感谢智明提供补丁）
+ * 修改stb\_truetype缓冲机制避免由于内存不足导致程序崩溃的现象并添加相关文档(感谢雨欣提供补丁)
+ * 修复demoui在VS中编译报错的问题(感谢雨欣提供补丁)
+
+2020/03/03
+ * 修复slide indicator没有更新的问题（感谢智明提供补丁）
+
+2020/03/02
+ * 删除将QT XML生成AWTK UI的转换工具（感谢陈谭提供补丁）。
+ * 修复widget\_clone处理tr\_text的BUG(感谢网友Eagle提供补丁)。
+ * 增加函数fs\_copy\_file、fs\_copy\_dir和dir\_exist。
+
+2020/03/01
+ * 修复slide\_view通过indicator快速切换page的时候导致有概 率出现播放动画异常（感谢智明提供补丁）
+ * 修复text\_selector在播放动画的时候调用text\_selector\_reset\_options会导致崩溃的问题（感谢智明提供补丁）
+
+2020/02/27
+ * 修复缺省输入法改用CLOSE事件造成崩溃的问题（感谢智明提供补丁）
+
+2020/02/26
+ * 修复 SD L内存泄露的问题（感谢智明提供补丁）
+ * 修复csv\_row\_to\_str（感谢林福提供补丁)
+ * 修改退出 gpinyin 的时候释放缓存句柄，以免出现内存泄露的问题（感谢智明提供补丁）
+ * 修复找不到字库导致使用非默认的字库显示的问题，统一修了查找字库的逻辑为先找指定的字库，如果找不到就找默认的字库，如果都找不到就返回 NULL，字体就不显示了。（感谢智明提供补丁）
+
+2021/02/25
+  * 修改 TK\_IM\_MAX\_CANDIDATE\_CHARS 为 0 的时候候选字长度才动态扩张的功能（发现之前的是默认候选字长度动态扩张的，应该改为不动态扩张才对，需要设置 TK\_IM\_MAX\_CANDIDATE\_CHARS 为 0 才动态扩张的）（感谢智明提供补丁）
+  * 重新实现 window\_manager\_close\_all 允许窗口触发事件，同时避免在窗口关闭事件中关闭其它窗口的问题。
+  * 修改默认输入法，在 keyboard 关闭时清除状态而不是销毁的时候，因为 EVT\_DESTROY 可能会异步执行。
+  * 修改 system\_bar 在没有顶层窗口时的警告。
+  * 修复生成 dark 主题资源的 json 文件（感谢智明提供补丁）
+  * 修复内存泄露的问题（感谢智明提供补丁）
+
+2021/02/24
+  * 修复更新风格类型失败的问题（感谢智明提供补丁）
+  * scripts.app\_helper 增加 use\_std\_cxx 指定 c++编译器的版本。
+  * 修复 widget\_add\_idle 函数和 widget\_add\_time 函数内存泄露的问题和修复多个控件的 idle 上下文 widget 被释放的问题（感谢智明提供补丁）。  
+  * 修复调用退出程序时候调用 window\_manager\_close\_all 函数无法触发 keyboard 销毁事件无法清除 idle 回调函数导致 idle 回调中出现野指针的问题（感谢智明提供补丁）
+
+2021/02/23
+  * 更新文档。
+  * 增加 tk\_expr\_eval。
+  * 修改 csv\_row\_to\_str 行尾多分隔符的问题（感谢林福提供）。 
+  * 增加 xml 的 CDATA 的值为空的语法支持（感谢智明提供补丁）。 
+  * combox 修改大小后导致字体偏移和修改了 tips\_text 默认左对齐（感谢智明提供补丁）。 
+  * 增加 TK\_DEFAULT\_WAIT\_TIME，用来控制 event source manager 中 select 最长等待时间。
+
+2021/02/22
+  * 修改 stm32 上编译警告。
+  * 修复 list\_view\_h 空子集的时候崩溃的问（感谢智明提供补丁）。 
+
+2021/02/20
+  * 完善编译脚本（感谢雨欣提供补丁）
+  * 修复 ini 的值为空的问题。
+  * fscript 增加 one\_of 函数。
+  * 修复 slide\_view 保存焦点不正常的问题以及完善和统一 slide\_view 和 pages 控件的保存焦点的代码（感谢智明提供补丁）。
+  * 修复创建 dialog 的时候没有根据 label 的风格来计算大小的导致显示不正常问题（感谢智明提供补丁）。
+  * 修复在高亮背景的对话框中打开 popup 窗口导致高亮失效的问题以及修复了在对话框中打开另外的窗口后切换到指定窗口导致对话框截获 system\_bar 的消息问题（感谢智明提供补丁）。
+  * 修复 awtk 搜索目录和生成不同主题的时候生成的资源不正确的问题（感谢智明提供补丁）
+
+2021/02/19
+  * fscript 支持 return 语句。
+  * fscript 支持 else if 语句。
+
+2021/02/05
+  * 修改 awtk-web 编译错误（感谢智明提供补丁）
+
 2021/02/04
-  * 增加函数str\_decode\_hex (感谢林福提供)。
+  * 重构 pages（感谢智明提供补丁）
+  * 增加函数 str\_decode\_hex （感谢林福提供）。
   * 增加函数 window\_set\_auto\_scale\_children。
   * 重命名 auto\_scale\_xxx 为 auto\_scale\_children\_xxx。
-  * 增加 network\_interface 接口及linux平台实现(感谢国文提供)。
-  * 增加[《如何根据实际分辨率自动调整窗口中子控件的位置大小》](how_to_auto_scale_children.md)
+  * 增加 network\_interface 接口及 linux 平台实现（感谢国文提供）。
+  * 增加 [《如何根据实际分辨率自动调整窗口中子控件的位置大小》](how_to_auto_scale_children.md)
 
 2021/02/03
   * 修复缺少 SDL 线程函数的声明的问题（感谢智明提供补丁）

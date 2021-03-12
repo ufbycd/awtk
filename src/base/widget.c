@@ -3013,49 +3013,24 @@ widget_t* widget_get_window_manager(widget_t* widget) {
   return window_manager();
 }
 
-static ret_t widget_remove_timer_on_destroy(void* ctx, event_t* e) {
-  uint32_t id = (char*)ctx - (char*)NULL;
-  timer_remove(id);
-
-  return RET_REMOVE;
-}
-
 uint32_t widget_add_timer(widget_t* widget, timer_func_t on_timer, uint32_t duration_ms) {
-  uint32_t id = 0;
   return_value_if_fail(widget != NULL && on_timer != NULL, TK_INVALID_ID);
-
-  id = timer_add(on_timer, widget, duration_ms);
-  widget_on(widget, EVT_DESTROY, widget_remove_timer_on_destroy, tk_pointer_from_int(id));
-
-  return id;
+  return timer_add_with_type(on_timer, widget, duration_ms, TIMER_INFO_WIDGET_ADD);
 }
 
 ret_t widget_remove_timer(widget_t* widget, uint32_t timer_id) {
   return_value_if_fail(widget != NULL, RET_BAD_PARAMS);
-
-  if (widget_off_by_func(widget, EVT_DESTROY, widget_remove_timer_on_destroy,
-                         tk_pointer_from_int(timer_id)) == RET_OK) {
-    return timer_remove(timer_id);
-  }
-
-  return RET_BAD_PARAMS;
-}
-
-static ret_t widget_remove_idle_on_destroy(void* ctx, event_t* e) {
-  uint32_t id = (char*)ctx - (char*)NULL;
-  idle_remove(id);
-
-  return RET_REMOVE;
+  return timer_remove(timer_id);
 }
 
 uint32_t widget_add_idle(widget_t* widget, idle_func_t on_idle) {
-  uint32_t id = 0;
   return_value_if_fail(widget != NULL && on_idle != NULL, TK_INVALID_ID);
+  return idle_add_with_type(on_idle, widget, IDLE_INFO_WIDGET_ADD);
+}
 
-  id = idle_add(on_idle, widget);
-  widget_on(widget, EVT_DESTROY, widget_remove_idle_on_destroy, tk_pointer_from_int(id));
-
-  return id;
+ret_t widget_remove_idle(widget_t* widget, uint32_t idle_id) {
+  return_value_if_fail(widget != NULL, RET_BAD_PARAMS);
+  return idle_remove(idle_id);
 }
 
 static ret_t widget_destroy_sync(widget_t* widget) {
@@ -3067,6 +3042,9 @@ static ret_t widget_destroy_sync(widget_t* widget) {
 #endif /*WITHOUT_WIDGET_ANIMATORS*/
 
   widget->destroying = TRUE;
+  idle_remove_all_by_ctx_and_type(IDLE_INFO_WIDGET_ADD, widget);
+  timer_remove_all_by_ctx_and_type(TIMER_INFO_WIDGET_ADD, widget);
+
   if (widget->emitter != NULL) {
     widget_dispatch(widget, &e);
     emitter_destroy(widget->emitter);
@@ -3431,7 +3409,10 @@ static ret_t widget_copy_base_props(widget_t* widget, widget_t* other) {
   if (other->text.str != NULL) {
     widget_set_text(widget, other->text.str);
   }
-  widget->tr_text = tk_str_copy(widget->tr_text, other->tr_text);
+
+  if (other->tr_text != NULL) {
+    widget_set_tr_text(widget, other->tr_text);
+  }
 
   widget->enable = other->enable;
   widget->visible = other->visible;
@@ -4252,6 +4233,11 @@ bool_t widget_is_popup(widget_t* widget) {
 
 bool_t widget_is_overlay(widget_t* widget) {
   return tk_str_eq(widget->vt->type, WIDGET_TYPE_OVERLAY);
+}
+
+bool_t widget_is_opened_dialog(widget_t* widget) {
+  int32_t stage = widget_get_prop_int(widget, WIDGET_PROP_STAGE, WINDOW_STAGE_NONE);
+  return tk_str_eq(widget->vt->type, WIDGET_TYPE_DIALOG) && stage == WINDOW_STAGE_OPENED;
 }
 
 bool_t widget_is_opened_popup(widget_t* widget) {

@@ -43,9 +43,10 @@
 #endif /*HAS_AWTK_CONFIG*/
 
 #if defined(WIN32) || defined(LINUX) || defined(MACOS) || defined(ANDROID) || defined(IOS)
-
 #define WITH_SOCKET 1
+#endif /*WIN32 || MACOS || LINUX || IOS || ANDROID*/
 
+#ifdef WITH_SOCKET
 #ifdef WIN32
 #define WIN32_LEAN_AND_MEAN 1
 #include <windows.h>
@@ -63,9 +64,7 @@ typedef int socklen_t;
 #include <sys/time.h>
 #include <sys/types.h>
 #endif /*WIN32*/
-
-#endif /*WIN32 || MACOS || LINUX || IOS || ANDROID*/
-
+#endif/*WITH_SOCKET*/
 #ifdef __cplusplus
 #define BEGIN_C_DECLS extern "C" {
 #define END_C_DECLS }
@@ -325,6 +324,8 @@ typedef ret_t (*tk_destroy_t)(void* data);
 typedef ret_t (*tk_on_done_t)(void* data);
 typedef ret_t (*tk_on_result_t)(void* ctx, const void* data);
 typedef bool_t (*tk_is_valid_t)(void* data);
+
+/*TRUE 保留，FALSE 忽略*/
 typedef bool_t (*tk_filter_t)(void* ctx, const void* data);
 typedef int (*tk_compare_t)(const void* a, const void* b);
 typedef ret_t (*tk_visit_t)(void* ctx, const void* data);
@@ -403,5 +404,9 @@ typedef struct _event_source_manager_t event_source_manager_t;
 #define TK_CLEAR_BIT(v, n) ((v) &= ~(1UL << (n)))
 #define TK_TOGGLE_BIT(v, n) ((v) ^= (1UL << (n)))
 #define TK_TEST_BIT(v, n) (((v) >> (n)) & 1U)
+
+#ifndef TK_DEFAULT_WAIT_TIME
+#define TK_DEFAULT_WAIT_TIME 16
+#endif /*TK_DEFAULT_WAIT_TIME*/
 
 #endif /*TYPES_DEF_H*/

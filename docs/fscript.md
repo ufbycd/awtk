@@ -173,6 +173,18 @@ print(join(",", 1, 2, 3))
 print(join(",",1,2,3,4), join(";",5,6,7,8))
 ```
 
+### 提前返回(return)
+
+```
+var a = 1;
+if(a == 1) {
+  print("return");
+  return;
+} else {
+  print("end");
+}
+```
+
 ### 条件执行
 
 * 语句方式
@@ -188,6 +200,24 @@ if(a < b) {
   print(a, "<", b)
 } else {
   print(a, ">=", b)
+}
+```
+
+else if
+
+```
+var b = "";
+
+if(a == 1) {
+  b = "a"
+} else if(a == 2) {
+  b = "b"
+} else if(a == 3) {
+  b = "c"
+} else if(a == 4) {
+  b = "d"
+} else {
+  b = "other"
 }
 ```
 
@@ -696,6 +726,30 @@ join(seperator, s1, s2, s3...) => str
 
 ```
 join(",", 1, 2, 3, "abc")
+```
+
+#### one_of
+
+> 从字符串数组中取出第N个字符串
+
+----------------------------
+
+##### 原型
+
+```
+one_of(str_array, index, sep) => str
+```
+> sep为分隔符，默认为英文分号(;)。
+
+#### 示例
+
+```
+one_of("aa;bb;cc", 0) # => aa
+one_of("aa;bb;cc", 1) # => bb
+one_of("aa;bb;cc", 2) # => cc
+
+one_of("aa.bb.cc", 0, ".") # ==> aa
+
 ```
 
 #### len

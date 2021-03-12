@@ -680,7 +680,12 @@ static ret_t text_edit_paint_text(text_edit_t* text_edit, canvas_t* c) {
     color_t trans =
         style_get_color(widget->astyle, STYLE_ID_TEXT_COLOR, color_init(0x0, 0x0, 0x0, 0x0));
     color_t tc = style_get_color(widget->astyle, STYLE_ID_TIPS_TEXT_COLOR, trans);
+    align_h_t align_h =
+        (align_h_t)style_get_int(widget->astyle, STYLE_ID_TEXT_ALIGN_H, ALIGN_H_LEFT);
+    align_v_t align_v =
+        (align_v_t)style_get_int(widget->astyle, STYLE_ID_TEXT_ALIGN_V, ALIGN_V_MIDDLE);
     canvas_set_text_color(c, tc);
+    canvas_set_text_align(c, align_h, align_v);
     return text_edit_paint_tips_text(text_edit, c);
   }
 }
@@ -992,7 +997,7 @@ ret_t text_edit_key_down(text_edit_t* text_edit, key_event_t* evt) {
   layout_info = &(impl->layout_info);
 
   switch (key) {
-#ifdef SDL2
+#ifdef WITH_SDL
     case TK_KEY_KP_DIVIDE:
     case TK_KEY_KP_MULTIPLY:
     case TK_KEY_KP_MINUS:

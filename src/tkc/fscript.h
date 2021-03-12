@@ -92,6 +92,7 @@ typedef struct _fscript_t {
   fscript_func_call_t* error_func;
   bool_t breaked;
   bool_t continued;
+  bool_t returned;
   uint8_t while_count;
 } fscript_t;
 
@@ -174,6 +175,16 @@ ret_t fscript_register_func(const char* name, fscript_func_t func);
  * @return {ret_t} 返回RET_OK表示成功，否则表示失败。
  */
 ret_t fscript_global_deinit(void);
+
+/**
+ * @method tk_expr_eval
+ * 对fscript的简单包装。
+ * 
+ * @param {const char*} expr 表达式。
+ *
+ * @return {double} 返回表达式的值。
+ */
+double tk_expr_eval(const char* expr);
 
 /*注册自定义函数时，属性名的前缀。*/
 #define STR_FSCRIPT_FUNCTION_PREFIX "function."

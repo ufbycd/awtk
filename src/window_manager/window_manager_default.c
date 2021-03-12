@@ -354,7 +354,9 @@ static ret_t window_manager_create_animator(window_manager_default_t* wm, widget
     }
   } else {
     widget_invalidate_force(prev_win, NULL);
-    window_manager_prepare_dialog_highlighter(WIDGET(wm), prev_win, curr_win);
+    if (widget_get_prop(curr_win, WIDGET_PROP_HIGHLIGHT, &v) == RET_OK) {
+      window_manager_prepare_dialog_highlighter(WIDGET(wm), prev_win, curr_win);
+    }
   }
 
   return wm->animating ? RET_OK : RET_FAIL;
@@ -711,7 +713,7 @@ static ret_t window_manager_animate_done_set_window_foreground(widget_t* widget,
     is_set = FALSE;
   }
 
-  if (is_set) {
+  if (is_set && (widget_is_normal_window(iter) || i + 1 == widget->children->size)) {
     window_manager_dispatch_window_event(iter, EVT_WINDOW_TO_FOREGROUND);
   }
   WIDGET_FOR_EACH_CHILD_END()
@@ -975,7 +977,9 @@ static ret_t window_manager_default_on_paint_children(widget_t* widget, canvas_t
   /*paint dialog and other*/
   WIDGET_FOR_EACH_CHILD_BEGIN(widget, iter, i)
   if (i >= start && iter->visible) {
-    if (!widget_is_system_bar(iter) && !widget_is_normal_window(iter)) {
+    if ((!widget_is_system_bar(iter) && !widget_is_normal_window(iter)) ||
+        (wm->dialog_highlighter != NULL && wm->dialog_highlighter->dialog != NULL &&
+         widget_is_normal_window(iter))) {
       widget_paint(iter, c);
     }
   }
@@ -1386,29 +1390,29 @@ static ret_t window_manager_default_dispatch_native_window_event(widget_t* widge
 }
 
 static window_manager_vtable_t s_window_manager_self_vtable = {
+    .switch_to = window_manager_default_switch_to,
     .paint = window_manager_default_paint,
     .post_init = window_manager_default_post_init,
     .set_cursor = window_manager_default_set_cursor,
     .open_window = window_manager_default_open_window,
-    .get_pointer = window_manager_default_get_pointer,
-    .is_animating = window_manager_default_is_animating,
     .close_window = window_manager_default_close_window,
-    .switch_to = window_manager_default_switch_to,
     .set_show_fps = window_manager_default_set_show_fps,
     .get_prev_window = window_manager_default_get_prev_window,
     .close_window_force = window_manager_default_close_window_force,
     .dispatch_input_event = window_manager_default_dispatch_input_event,
     .dispatch_native_window_event = window_manager_default_dispatch_native_window_event,
+    .set_screen_saver_time = window_manager_default_set_screen_saver_time,
+    .get_pointer = window_manager_default_get_pointer,
+    .is_animating = window_manager_default_is_animating,
     .snap_curr_window = window_manager_default_snap_curr_window,
     .snap_prev_window = window_manager_default_snap_prev_window,
     .get_dialog_highlighter = window_manager_default_get_dialog_highlighter,
-    .set_screen_saver_time = window_manager_default_set_screen_saver_time,
     .resize = window_manager_default_resize};
 
 static const widget_vtable_t s_window_manager_vtable = {
     .size = sizeof(window_manager_t),
-    .is_window_manager = TRUE,
     .type = WIDGET_TYPE_WINDOW_MANAGER,
+    .is_window_manager = TRUE,
     .set_prop = window_manager_default_set_prop,
     .get_prop = window_manager_default_get_prop,
     .on_event = window_manager_default_on_event,
