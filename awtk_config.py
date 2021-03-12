@@ -188,12 +188,7 @@ elif OS_NAME == 'Linux':
   else:
     OS_FLAGS = OS_FLAGS + ' -DWITH_64BIT_CPU '
 
-<<<<<<< HEAD
-  OS_LINKFLAGS=' -Wl,-rpath=./bin ' 
-  OS_LINKFLAGS= OS_LINKFLAGS + ' -Wl,-rpath=' + os.path.abspath(TK_BIN_DIR) + ' '
-=======
   OS_LINKFLAGS=' -Wl,-rpath=./bin -Wl,-rpath=./ '
->>>>>>> master
   AWTK_DLL_DEPS_LIBS = NANOVG_BACKEND_LIBS + ['SDL2', 'glad'] + OS_LIBS
   OS_WHOLE_ARCHIVE =' -Wl,--whole-archive -lawtk_global -lextwidgets -lwidgets -lbase -lgpinyin -lstreams -lconf_io -lhal -lcsv -lubjson -lcompressors -lfribidi -lmbedtls -lminiz -ltkc_static -llinebreak -Wl,--no-whole-archive'
 
