@@ -160,6 +160,18 @@ class AppHelperBase:
         if plat == PLATFORM:
             self.APP_LINKFLAGS += APP_LINKFLAGS
         return self
+        
+    def SConscript(self, SConscript, SConscriptFiles):
+        if len(self.BUILD_DIR) == 0:
+            SConscript(SConscriptFiles)
+        else:
+            for sc in SConscriptFiles:
+                dir = os.path.dirname(sc)
+                if len(dir) == 0:
+                    build_dir = self.BUILD_DIR
+                else:
+                    build_dir = os.path.join(self.BUILD_DIR, dir)
+                SConscript(sc, variant_dir=build_dir, duplicate=False)
 
     def __init__(self, ARGUMENTS):
         APP_ROOT = os.path.normpath(os.getcwd())
@@ -179,8 +191,11 @@ class AppHelperBase:
         self.AWTK_CFLAGS = self.awtk.CFLAGS
         self.AWTK_CCFLAGS = self.awtk.CCFLAGS
         self.APP_ROOT = APP_ROOT
-        self.APP_BIN_DIR = os.path.join(APP_ROOT, 'bin')
-        self.APP_LIB_DIR = os.path.join(APP_ROOT, 'lib')
+        self.BUILD_DIR = ARGUMENTS.get('BUILD_DIR', '')
+        self.BIN_DIR = os.path.join(self.BUILD_DIR, 'bin')
+        self.LIB_DIR = os.path.join(self.BUILD_DIR, 'lib')
+        self.APP_BIN_DIR = os.path.join(APP_ROOT, self.BIN_DIR)
+        self.APP_LIB_DIR = os.path.join(APP_ROOT, self.LIB_DIR)
         self.APP_SRC = os.path.join(APP_ROOT, 'src')
         self.APP_RES = os.path.join(APP_ROOT, 'res')
         self.APP_LIBS = []
@@ -279,7 +294,8 @@ class AppHelperBase:
 
         for iter in self.DEPENDS_LIBS:
             for so in iter['shared_libs']:
-                self.awtk.copySharedLib(iter['root'], self.APP_BIN_DIR, so)
+                src = os.path.join(iter['root'], self.BUILD_DIR)
+                self.awtk.copySharedLib(src, self.APP_BIN_DIR, so)
 
     def genIdlAndDef(self):
         if self.DEF_FILE:
@@ -311,6 +327,7 @@ class AppHelperBase:
         print('  THEME="default"')
         print('  SHARED=true')
         print('  LINUX_FB=false')
+        print('  BUILD_DIR=""')
         sys.exit(0)
 
     def parseArgs(self, awtk, ARGUMENTS):
@@ -506,8 +523,8 @@ class AppHelperBase:
                     LIBPATH = LIBPATH + [join_path(iter['root'], f)]
             else:
                 if self.isBuildShared():
-                    LIBPATH += [join_path(iter['root'], 'bin')]
-                LIBPATH += [join_path(iter['root'], 'lib')]
+                    LIBPATH += [join_path(iter['root'], self.BIN_DIR)]
+                LIBPATH += [join_path(iter['root'], self.LIB_DIR)]
         LIBS = self.APP_LIBS + LIBS
 
         self.prepare()
