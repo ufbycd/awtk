@@ -162,15 +162,12 @@ class AppHelperBase:
         return self
         
     def SConscript(self, SConscript, SConscriptFiles):
-        if len(self.BUILD_DIR) == 0:
+        if not self.BUILD_DIR:
             SConscript(SConscriptFiles)
         else:
             for sc in SConscriptFiles:
                 dir = os.path.dirname(sc)
-                if len(dir) == 0:
-                    build_dir = self.BUILD_DIR
-                else:
-                    build_dir = os.path.join(self.BUILD_DIR, dir)
+                build_dir = os.path.join(self.BUILD_DIR, dir)
                 SConscript(sc, variant_dir=build_dir, duplicate=False)
 
     def __init__(self, ARGUMENTS):
@@ -216,6 +213,7 @@ class AppHelperBase:
         os.environ['BIN_DIR'] = self.APP_BIN_DIR
         os.environ['LIB_DIR'] = self.APP_LIB_DIR
         os.environ['LINUX_FB'] = 'false'
+        os.environ['BUILD_DIR'] = self.BUILD_DIR
         if self.LINUX_FB:
             os.environ['LINUX_FB'] = 'true'
 
@@ -327,7 +325,7 @@ class AppHelperBase:
         print('  THEME="default"')
         print('  SHARED=true')
         print('  LINUX_FB=false')
-        print('  BUILD_DIR=""')
+        print('  BUILD_DIR=arm')
         sys.exit(0)
 
     def parseArgs(self, awtk, ARGUMENTS):

@@ -1,10 +1,12 @@
 import os
 import awtk_config as awtk
+from scripts.app_helper_base import AppHelperBase as Helper
 
 APP_TOOLS = None
 if awtk.TOOLS_NAME != '' :
   APP_TOOLS = [awtk.TOOLS_NAME]
 
+helper = Helper({'BUILD_DIR': awtk.BUILD_DIR})
 awtk.genIdlAndDef();
 DefaultEnvironment(TOOLS = APP_TOOLS,
   CCFLAGS = awtk.AWTK_CCFLAGS,
@@ -50,9 +52,9 @@ SConscriptFiles=awtk.NANOVG_BACKEND_PROJS + [
   'src/hal/tools/network_shell/SConscript',
   ] + awtk.OS_PROJECTS
   
-os.environ['TK_ROOT'] = awtk.TK_ROOT;
-os.environ['BIN_DIR'] = awtk.TK_BIN_DIR;
-os.environ['LIB_DIR'] = awtk.TK_LIB_DIR;
+os.environ['TK_ROOT'] = awtk.TK_ROOT
+os.environ['BIN_DIR'] = awtk.TK_BIN_DIR
+# os.environ['LIB_DIR'] = awtk.TK_LIB_DIR
 
-SConscript(SConscriptFiles)
-
+# SConscript(SConscriptFiles)
+helper.SConscript(SConscript, SConscriptFiles)

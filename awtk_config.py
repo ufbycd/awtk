@@ -81,6 +81,7 @@ NANOVG_BACKEND_PROJS=[];
 NATIVE_WINDOW='sdl'
 TOOLS_NAME = ''
 #TOOLS_NAME = 'mingw'
+BUILD_DIR = 'build'
 
 COMMON_CCFLAGS=' -DTK_ROOT=\"\\\"'+TK_ROOT+'\\\"\" ' 
 #COMMON_CCFLAGS=COMMON_CCFLAGS+' -DWITHOUT_WINDOW_ANIMATOR_CACHE=1 '
@@ -329,7 +330,7 @@ def copySharedLib(src, dst, name):
     if not os.path.exists(dst):
         os.makedirs(dst)
     shutil.copy(src, dst)
-    print(src + '==>' + dst);
+    print(src + ' ==> ' + dst);
 
 def isBuildShared():
   return 'WITH_AWTK_SO' in os.environ and os.environ['WITH_AWTK_SO'] == 'true'
