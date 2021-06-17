@@ -325,6 +325,9 @@ def copySharedLib(src, dst, name):
     dst = os.path.normpath(dst)
     if os.path.abspath(src) == os.path.abspath(dst):
         return
+    if not os.path.exists(src):
+        print('Can\'t find ' + src + '. Please build '+name+'before!')
+        return
     #print(src + ' ==> ' + dst);
     Script.Command(dst, src, Script.Copy("$TARGET", "$SOURCE"))
 
