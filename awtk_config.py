@@ -3,6 +3,7 @@ import os.path
 import platform
 import shutil
 from shutil import copyfile
+from SCons import Script
 
 TOOLS_PREFIX=''
 OS_NAME = platform.system();
@@ -308,29 +309,24 @@ def has_custom_cc():
     return False
 
 def copySharedLib(src, dst, name):
-  if OS_NAME == 'Darwin':
-    src = os.path.join(src, 'bin/lib'+name+'.dylib')
-  elif OS_NAME == 'Linux':
-    src = os.path.join(src, 'bin/lib'+name+'.so')
-  elif OS_NAME == 'Windows':
-    src = os.path.join(src, 'bin/'+name+'.dll')
-  else:
-    print('not support ' + OS_NAME)
-    return
-	
-  src = os.path.normpath(src);
-  dst = os.path.normpath(dst);
+    if OS_NAME == 'Darwin':
+        lib_name = 'lib'+name+'.dylib'
+    elif OS_NAME == 'Linux':
+        lib_name = 'lib'+name+'.so'
+    elif OS_NAME == 'Windows':
+        lib_name = 'lib'+name+'.dll'
+    else:
+        print('not support ' + OS_NAME)
+        return
 
-  if os.path.dirname(src) == dst:
-      return
-
-  if not os.path.exists(src):
-    print('Can\'t find ' + src + '. Please build '+name+'before!')
-  else:
-    if not os.path.exists(dst):
-        os.makedirs(dst)
-    shutil.copy(src, dst)
-    print(src + ' ==> ' + dst);
+    src = os.path.join(src, 'bin', lib_name)
+    dst = os.path.join(dst, lib_name)
+    src = os.path.normpath(src)
+    dst = os.path.normpath(dst)
+    if os.path.abspath(src) == os.path.abspath(dst):
+        return
+    #print(src + ' ==> ' + dst);
+    Script.Command(dst, src, Script.Copy("$TARGET", "$SOURCE"))
 
 def isBuildShared():
   return 'WITH_AWTK_SO' in os.environ and os.environ['WITH_AWTK_SO'] == 'true'

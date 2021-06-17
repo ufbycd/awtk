@@ -3,6 +3,7 @@ import sys
 import json
 import shutil
 import platform
+from SCons import Script
 
 PLATFORM = platform.system()
 
@@ -161,14 +162,14 @@ class AppHelperBase:
             self.APP_LINKFLAGS += APP_LINKFLAGS
         return self
         
-    def SConscript(self, SConscript, SConscriptFiles):
+    def SConscript(self, SConscriptFiles):
         if not self.BUILD_DIR:
-            SConscript(SConscriptFiles)
+            Script.SConscript(SConscriptFiles)
         else:
             for sc in SConscriptFiles:
                 dir = os.path.dirname(sc)
                 build_dir = os.path.join(self.BUILD_DIR, dir)
-                SConscript(sc, variant_dir=build_dir, duplicate=False)
+                Script.SConscript(sc, variant_dir=build_dir, duplicate=False)
 
     def __init__(self, ARGUMENTS):
         APP_ROOT = os.path.normpath(os.getcwd())
@@ -181,7 +182,7 @@ class AppHelperBase:
         self.DEPENDS_LIBS = []
         self.GEN_IDL_DEF = True
         self.BUILD_SHARED = True
-        self.LINUX_FB = ARGUMENTS.get('LINUX_FB', '') != ''
+        self.LINUX_FB = ARGUMENTS.get('LINUX_FB', '') == 'true'
         self.AWTK_ROOT = self.getAwtkRoot()
         self.awtk = self.getAwtkConfig()
         self.AWTK_LIBS = self.awtk.LIBS
@@ -525,9 +526,8 @@ class AppHelperBase:
                 LIBPATH += [join_path(iter['root'], self.LIB_DIR)]
         LIBS = self.APP_LIBS + LIBS
 
-        self.prepare()
         if hasattr(awtk, 'CC'):
-            DefaultEnvironment(
+            env = DefaultEnvironment(
                 CC=awtk.CC,
                 CXX=awtk.CXX,
                 LD=awtk.LD,
@@ -546,7 +546,7 @@ class AppHelperBase:
                 OS_SUBSYSTEM_CONSOLE=awtk.OS_SUBSYSTEM_CONSOLE,
                 OS_SUBSYSTEM_WINDOWS=awtk.OS_SUBSYSTEM_WINDOWS)
         else:
-            DefaultEnvironment(
+            env = DefaultEnvironment(
                 TOOLS=APP_TOOLS,
                 CPPPATH=CPPPATH,
                 LINKFLAGS=LINKFLAGS,
@@ -558,3 +558,11 @@ class AppHelperBase:
                 TARGET_ARCH=awtk.TARGET_ARCH,
                 OS_SUBSYSTEM_CONSOLE=awtk.OS_SUBSYSTEM_CONSOLE,
                 OS_SUBSYSTEM_WINDOWS=awtk.OS_SUBSYSTEM_WINDOWS)
+        
+        env['SConscript'] = env.SConscript
+        def variant_SConscript(env, SConscriptFiles):
+            self.SConscript(env['SConscript'], SConscriptFiles)
+        env.AddMethod(variant_SConscript, "SConscript")
+    
+        self.prepare()
+        return env

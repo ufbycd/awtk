@@ -24,7 +24,7 @@ SConscriptFiles=awtk.NANOVG_BACKEND_PROJS + [
   '3rd/mbedtls/SConscript',
   '3rd/nanovg/SConscript',
   '3rd/glad/SConscript',
-  '3rd/gpinyin/SConscript', 
+  '3rd/gpinyin/SConscript',
   '3rd/libunibreak/SConscript',
   '3rd/lz4/SConscript',
   '3rd/miniz/SConscript',
@@ -37,24 +37,24 @@ SConscriptFiles=awtk.NANOVG_BACKEND_PROJS + [
   'src/streams/tools/SConscript',
   'src/compressors/SConscript',
   'src/ubjson/SConscript',
-  'tools/common/SConscript', 
-  'tools/theme_gen/SConscript', 
-  'tools/font_gen/SConscript', 
-  'tools/image_gen/SConscript', 
-  'tools/image_resize/SConscript', 
+  'tools/common/SConscript',
+  'tools/theme_gen/SConscript',
+  'tools/font_gen/SConscript',
+  'tools/image_gen/SConscript',
+  'tools/image_resize/SConscript',
   'tools/image_dither/SConscript',
-  'tools/res_gen/SConscript', 
-  'tools/str_gen/SConscript', 
+  'tools/res_gen/SConscript',
+  'tools/str_gen/SConscript',
   'tools/ui_gen/xml_to_ui/SConscript',
   'tools/svg_gen/SConscript',
-  'demos/SConscript', 
+  'demos/SConscript',
   'tests/SConscript',
   'src/hal/tools/network_shell/SConscript',
   ] + awtk.OS_PROJECTS
-  
+
 os.environ['TK_ROOT'] = awtk.TK_ROOT
 os.environ['BIN_DIR'] = awtk.TK_BIN_DIR
 # os.environ['LIB_DIR'] = awtk.TK_LIB_DIR
 
 # SConscript(SConscriptFiles)
-helper.SConscript(SConscript, SConscriptFiles)
+helper.SConscript(SConscriptFiles)
