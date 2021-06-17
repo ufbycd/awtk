@@ -59,8 +59,6 @@ canvas_t* native_window_get_canvas(native_window_t* win) {
 ret_t native_window_update_last_dirty_rect(native_window_t* win) {
   return_value_if_fail(win != NULL, RET_BAD_PARAMS);
 
-  win->last_dirty_rect = win->dirty_rect;
-
   return RET_OK;
 }
 
@@ -70,9 +68,6 @@ rect_t native_window_calc_dirty_rect(native_window_t* win) {
   return_value_if_fail(win != NULL, r);
 
   r = win->dirty_rect;
-  ldr = &(win->last_dirty_rect);
-
-  rect_merge(&r, ldr);
 
   return rect_fix(&r, win->rect.w, win->rect.h);
 }

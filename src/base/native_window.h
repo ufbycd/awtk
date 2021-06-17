@@ -92,7 +92,6 @@ struct _native_window_t {
 
   bool_t dirty;
   rect_t dirty_rect;
-  rect_t last_dirty_rect;
 
   const native_window_vtable_t* vt;
 };
