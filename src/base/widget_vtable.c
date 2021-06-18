@@ -107,7 +107,7 @@ ret_t widget_on_paint_children_default(widget_t* widget, canvas_t* c) {
     continue;
   }
 
-  {
+  if (!(iter->vt->allow_draw_outside)) {
     int32_t tolerance = widget->dirty_rect_tolerance;
     int32_t left = c->ox + iter->x - tolerance;
     int32_t top = c->oy + iter->y - tolerance;
@@ -117,12 +117,7 @@ ret_t widget_on_paint_children_default(widget_t* widget, canvas_t* c) {
     if (left > c->clip_right || right < c->clip_left || top > c->clip_bottom ||
         bottom < c->clip_top) {
       iter->dirty = FALSE;
-      log_debug("skip %s %d %d %d %d\n", iter->name != NULL ? iter->name : iter->vt->type, 
-        iter->x, iter->y, iter->w, iter->h);
       continue;
-    } else {
-      log_debug("paint %s %d %d %d %d\n", iter->name != NULL ? iter->name : iter->vt->type, 
-        iter->x, iter->y, iter->w, iter->h);
     }
   }
 
