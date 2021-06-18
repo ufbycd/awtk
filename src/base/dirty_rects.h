@@ -176,11 +176,14 @@ static inline ret_t dirty_rects_add(dirty_rects_t* dirty_rects, const rect_t* r)
     rect_t* iter = dirty_rects->rects + i;
     if (rect_has_intersect(iter, r)) {
       rect_merge(iter, r);
+      log_debug("merge (%d %d %d %d) (%d %d %d %d) \n", r->x, r->y, r->w, r->h, 
+        iter->x, iter->y, iter->w, iter->h);
       return dirty_rects_fix(dirty_rects);
     }
   }
 
   dirty_rects->rects[dirty_rects->nr++] = *r;
+  log_debug("add (%d %d %d %d) %u\n", r->x, r->y, r->w, r->h, dirty_rects->nr);
 
   return RET_OK;
 }
