@@ -29,6 +29,7 @@
 #include "base/assets_manager.h"
 
 #define ANCHOR_PX_STR_LEN 2
+#define DEFAULT_POINTER_SIZE 0.6f
 
 float_t gauge_pointer_get_anchor_for_str(float_t max_size, const char* anchor);
 
@@ -83,20 +84,36 @@ static rect_t gauge_pointer_calc_dirty_rect(widget_t* widget, int32_t img_w, int
 }
 
 static ret_t gauge_pointer_invalidate(widget_t* widget, const rect_t* rect) {
-  bitmap_t bitmap;
+  rect_t r;
+  int32_t w = 0;
+  int32_t h = 0;
+  widget_t* parent = widget->parent;
   gauge_pointer_t* gauge_pointer = GAUGE_POINTER(widget);
 
   if (gauge_pointer->bsvg_asset != NULL || gauge_pointer->image == NULL) {
-    return widget_invalidate_force(widget->parent, NULL);
+    if (gauge_pointer->bsvg_asset != NULL) {
+      bsvg_t bsvg;
+      const asset_info_t* asset = gauge_pointer->bsvg_asset;
+    
+      bsvg_init(&bsvg, (const uint32_t*)asset->data, asset->size);
+      w = bsvg.header->w;
+      h = bsvg.header->h;
+    } else {
+      w = widget->w;
+      h = widget->h * DEFAULT_POINTER_SIZE * 1.2f;
+    }
+  } else {
+    bitmap_t bitmap;
+    if (widget_load_image(widget, gauge_pointer->image, &bitmap) == RET_OK) {
+      w =  bitmap.w;
+      h =  bitmap.h;
+    } else {
+      return RET_OK;
+    }
   }
-
-  if (widget_load_image(widget, gauge_pointer->image, &bitmap) == RET_OK) {
-    rect_t r = gauge_pointer_calc_dirty_rect(widget, bitmap.w, bitmap.h);
-
-    widget_invalidate(widget->parent, &r);
-  }
-
-  return RET_OK;
+  
+  r = gauge_pointer_calc_dirty_rect(widget, w, h);
+  return widget_invalidate(parent, &r);
 }
 
 ret_t gauge_pointer_set_angle(widget_t* widget, float_t angle) {
@@ -280,7 +297,7 @@ static ret_t gauge_pointer_paint_default(widget_t* widget, vgcanvas_t* vg) {
 
   vgcanvas_begin_path(vg);
   vgcanvas_move_to(vg, cx, 0);
-  vgcanvas_line_to(vg, cx, cx + h * 0.6f);
+  vgcanvas_line_to(vg, cx, cx + h * DEFAULT_POINTER_SIZE);
   vgcanvas_set_line_width(vg, 2);
   vgcanvas_set_stroke_color(vg, bg);
   vgcanvas_stroke(vg);
