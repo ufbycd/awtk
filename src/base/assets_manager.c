@@ -26,6 +26,7 @@
 #include "base/locale_info.h"
 #include "base/system_info.h"
 #include "base/assets_manager.h"
+#include "base/vgcanvas_asset_manager.inc"
 
 #define RAW_DIR "raw"
 #define ASSETS_DIR "assets"
@@ -235,7 +236,7 @@ static asset_info_t* try_load_image(assets_manager_t* am, const char* theme, con
       subpath = "images/svg";
       break;
     }
-    case ASSET_TYPE_IMAGE_OTHER : {
+    case ASSET_TYPE_IMAGE_OTHER: {
       extname = "";
       break;
     }
