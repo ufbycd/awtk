@@ -9,7 +9,8 @@ static inline ret_t dirty_rects_paint(dirty_rects_t* dirty_rects, widget_t* widg
   uint64_t start = time_now_us();
   return_value_if_fail(dirty_rects != NULL, RET_BAD_PARAMS);
   return_value_if_fail(widget != NULL && c != NULL && on_paint != NULL, RET_BAD_PARAMS);
-#if 0
+
+#ifdef WITHOUT_MULTI_DIRTY_RECTS
   iter = &(dirty_rects->max);
   widget_paint_with_clip(widget, iter, c, on_paint);
   
@@ -22,6 +23,11 @@ static inline ret_t dirty_rects_paint(dirty_rects_t* dirty_rects, widget_t* widg
     rect_t* iter = dirty_rects->rects + i;
     uint64_t start1 = time_now_us();
     widget_paint_with_clip(widget, iter, c, on_paint);
+
+#if DEBUG_DIRTY_RECT
+    canvas_set_stroke_color_str(c, "red");
+    canvas_stroke_rect(c, iter->x+1, iter->y+1, iter->w-2, iter->h-2);
+#endif/*DEBUG_DIRTY_RECT*/
 
     cost = time_now_us() - start1;
     log_debug("paint %u rect(%d %d %d %d) cost=%u\n", i, iter->x, iter->y, iter->w, iter->h, cost);
