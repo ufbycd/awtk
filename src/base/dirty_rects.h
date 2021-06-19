@@ -71,6 +71,7 @@ typedef struct _dirty_rects_t {
 /**
  * @method dirty_rects_reset
  * 重置dirty_rects对象。
+ * @export none
  * @param {dirty_rects_t*} dirty_rects dirty_rects对象。
  *
  * @return {ret_t} 返回RET_OK表示成功，否则表示失败。
@@ -89,6 +90,7 @@ static inline ret_t dirty_rects_reset(dirty_rects_t* dirty_rects) {
 
 /**
  * @method dirty_rects_init
+ * @export none
  * 初始化dirty_rects对象。
  * @param {dirty_rects_t*} dirty_rects dirty_rects对象。
  *
@@ -100,6 +102,7 @@ static inline ret_t dirty_rects_init(dirty_rects_t* dirty_rects) {
 
 /**
  * @method dirty_rects_deinit
+ * @export none
  * 释放dirty_rects对象。
  * @param {dirty_rects_t*} dirty_rects dirty_rects对象。
  *
@@ -111,6 +114,7 @@ static inline ret_t dirty_rects_deinit(dirty_rects_t* dirty_rects) {
 
 /**
  * @method dirty_rects_remove
+ * @export none
  * 删除指定序数的矩形。
  * @param {dirty_rects_t*} dirty_rects dirty_rects对象。
  * @param {uint32_t} index 序数。
@@ -132,6 +136,7 @@ static inline ret_t dirty_rects_remove(dirty_rects_t* dirty_rects, uint32_t inde
 
 /**
  * @method dirty_rects_fix
+ * @export none
  * 脏矩形之间可能重叠，合并重叠的脏矩形。
  * @param {dirty_rects_t*} dirty_rects dirty_rects对象。
  *
@@ -158,6 +163,7 @@ static inline ret_t dirty_rects_fix(dirty_rects_t* dirty_rects) {
 
 /**
  * @method dirty_rects_add
+ * @export none
  * 增加脏矩形。
  * @param {dirty_rects_t*} dirty_rects dirty_rects对象。
  * @param {rect_t*} r 脏矩形。
@@ -196,6 +202,7 @@ static inline ret_t dirty_rects_add(dirty_rects_t* dirty_rects, const rect_t* r)
 
 /**
  * @method dirty_rects_set_debug
+ * @export none
  * 设置是否开启调试模式。
  * @param {dirty_rects_t*} dirty_rects dirty_rects对象。
  * @param {bool_t} debug 是否开启调试模式。
@@ -210,6 +217,7 @@ static inline ret_t dirty_rects_set_debug(dirty_rects_t* dirty_rects, bool_t deb
 
 /**
  * @method dirty_rects_set_profile
+ * @export none
  * 设置是否开启profile模式。
  * @param {dirty_rects_t*} dirty_rects dirty_rects对象。
  * @param {bool_t} profile 是否开启profile模式。
@@ -224,6 +232,7 @@ static inline ret_t dirty_rects_set_profile(dirty_rects_t* dirty_rects, bool_t p
 
 /**
  * @method dirty_rects_set_disable_multiple
+ * @export none
  * 设置是否关闭多脏矩形模式(方便对比测试和调试)。
  * @param {dirty_rects_t*} dirty_rects dirty_rects对象。
  * @param {bool_t} disable_multiple 是否关闭多脏矩形模式。
