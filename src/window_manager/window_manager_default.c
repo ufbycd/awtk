@@ -1,4 +1,4 @@
-﻿/**
+/**
  * File:   window_manager_default.c
  * Author: AWTK Develop Team
  * Brief:  default window manager
@@ -672,7 +672,7 @@ static ret_t window_manager_paint_normal(widget_t* widget, canvas_t* c) {
         canvas_t* c = native_window_get_canvas(wm->native_window);
         canvas_begin_frame(c, &r, LCD_DRAW_NORMAL);
         wm->native_window->dirty = TRUE;
-        dirty_rects_paint(&(wm->native_window->dirty_rects), WIDGET(wm), c, widget_paint);
+        widget_paint(WIDGET(wm), c);
         window_manager_paint_cursor(widget, c);
         canvas_end_frame(c);
       }

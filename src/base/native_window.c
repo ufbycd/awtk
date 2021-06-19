@@ -1,4 +1,4 @@
-﻿/**
+/**
  * File:   native_window.h
  * Author: AWTK Develop Team
  * Brief:  native window
@@ -63,7 +63,6 @@ ret_t native_window_update_last_dirty_rect(native_window_t* win) {
 }
 
 rect_t native_window_calc_dirty_rect(native_window_t* win) {
-  rect_t* ldr = NULL;
   rect_t r = rect_init(0, 0, 0, 0);
   return_value_if_fail(win != NULL, r);
 
@@ -73,7 +72,6 @@ rect_t native_window_calc_dirty_rect(native_window_t* win) {
 }
 
 ret_t native_window_invalidate(native_window_t* win, const rect_t* r) {
-  rect_t* dr = NULL;
   return_value_if_fail(win != NULL, RET_BAD_PARAMS);
 
   return dirty_rects_add(&(win->dirty_rects), r);
