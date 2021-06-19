@@ -39,7 +39,7 @@ BEGIN_C_DECLS
  * * 如果新的脏矩形是独立的，直接加入进来。
  * * 如果新的脏矩形与某个脏矩形有重叠，则合并到该脏矩形。
  * * 如果脏矩形的个数超出最大个数则进行合并。
- *
+ * 
  */
 typedef struct _dirty_rects_t {
   /**
@@ -62,6 +62,10 @@ typedef struct _dirty_rects_t {
    * 脏矩形。
    */
   rect_t rects[TK_MAX_DIRTY_RECT_NR];
+  /*private*/
+  bool_t debug;
+  bool_t profile;
+  bool_t disable_multiple;
 } dirty_rects_t;
 
 /**
@@ -74,6 +78,11 @@ typedef struct _dirty_rects_t {
 static inline ret_t dirty_rects_reset(dirty_rects_t* dirty_rects) {
   return_value_if_fail(dirty_rects != NULL, RET_BAD_PARAMS);
   memset(dirty_rects, 0x00, sizeof(dirty_rects_t));
+/*
+  dirty_rects->debug = TRUE;
+  dirty_rects->disable_multiple = TRUE;
+*/  
+  dirty_rects->profile = TRUE;
 
   return RET_OK;
 }
@@ -185,24 +194,46 @@ static inline ret_t dirty_rects_add(dirty_rects_t* dirty_rects, const rect_t* r)
   return RET_OK;
 }
 
-static inline ret_t dirty_rects_dump(dirty_rects_t* dirty_rects) {
-  uint32_t i = 0;
-  rect_t* iter = NULL;
+/**
+ * @method dirty_rects_set_debug
+ * 设置是否开启调试模式。
+ * @param {dirty_rects_t*} dirty_rects dirty_rects对象。
+ * @param {bool_t} debug 是否开启调试模式。
+ *
+ * @return {ret_t} 返回RET_OK表示成功，否则表示失败。
+ */
+static inline ret_t dirty_rects_set_debug(dirty_rects_t* dirty_rects, bool_t debug) {
   return_value_if_fail(dirty_rects != NULL, RET_BAD_PARAMS);
+  dirty_rects->debug = debug;
+  return RET_OK;
+}
 
-  iter = &(dirty_rects->max);
-  log_debug("max:");
-  log_debug("(%d %d %d %d)", iter->x, iter->y, iter->w, iter->h);
-  log_debug("\n");
+/**
+ * @method dirty_rects_set_profile
+ * 设置是否开启profile模式。
+ * @param {dirty_rects_t*} dirty_rects dirty_rects对象。
+ * @param {bool_t} profile 是否开启profile模式。
+ *
+ * @return {ret_t} 返回RET_OK表示成功，否则表示失败。
+ */
+static inline ret_t dirty_rects_set_profile(dirty_rects_t* dirty_rects, bool_t profile) {
+  return_value_if_fail(dirty_rects != NULL, RET_BAD_PARAMS);
+  dirty_rects->profile = profile;
+  return RET_OK;
+}
 
-  log_debug("===========================================================\n");
-  for (i = 0; i < dirty_rects->nr; i++) {
-    rect_t* iter = dirty_rects->rects + i;
-    log_debug("(%d %d %d %d)", iter->x, iter->y, iter->w, iter->h);
-  }
-  log_debug("\n");
-  log_debug("===========================================================\n\n");
-
+/**
+ * @method dirty_rects_set_disable_multiple
+ * 设置是否关闭多脏矩形模式(方便对比测试和调试)。
+ * @param {dirty_rects_t*} dirty_rects dirty_rects对象。
+ * @param {bool_t} disable_multiple 是否关闭多脏矩形模式。
+ *
+ * @return {ret_t} 返回RET_OK表示成功，否则表示失败。
+ */
+static inline ret_t dirty_rects_set_disable_multiple(dirty_rects_t* dirty_rects,
+                                                     bool_t disable_multiple) {
+  return_value_if_fail(dirty_rects != NULL, RET_BAD_PARAMS);
+  dirty_rects->disable_multiple = disable_multiple;
   return RET_OK;
 }
 
