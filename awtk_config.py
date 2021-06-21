@@ -21,8 +21,8 @@ else:
 
 print('MACH=' + MACH + ' ARCH=' + str(ARCH) + ' TARGET_ARCH=' + TARGET_ARCH)
 
-def joinPath(root, subdir):
-  return os.path.normpath(os.path.join(root, subdir))
+def joinPath(root, *subdir):
+  return os.path.normpath(os.path.join(root, *subdir))
 
 TK_ROOT=os.path.dirname(os.path.normpath(os.path.abspath(__file__)))
 
@@ -33,9 +33,10 @@ if not os.path.exists(WIN32_AWTK_RES):
 print('TK_ROOT: ' + TK_ROOT);
 print('WIN32_AWTK_RES: ' + WIN32_AWTK_RES);
 
+BUILD_DIR = 'build'
 TK_SRC        = joinPath(TK_ROOT, 'src')
 TK_BIN_DIR    = joinPath(TK_ROOT, 'bin')
-TK_LIB_DIR    = joinPath(TK_ROOT, 'lib')
+TK_LIB_DIR    = joinPath(TK_ROOT, BUILD_DIR, 'lib')
 TK_3RD_ROOT   = joinPath(TK_ROOT, '3rd')
 TK_TOOLS_ROOT = joinPath(TK_ROOT, 'tools')
 TK_DEMO_ROOT  = joinPath(TK_ROOT, 'demos')
@@ -82,7 +83,6 @@ NANOVG_BACKEND_PROJS=[];
 NATIVE_WINDOW='sdl'
 TOOLS_NAME = ''
 #TOOLS_NAME = 'mingw'
-BUILD_DIR = 'build'
 
 COMMON_CCFLAGS=' -DTK_ROOT=\"\\\"'+TK_ROOT+'\\\"\" ' 
 #COMMON_CCFLAGS=COMMON_CCFLAGS+' -DWITHOUT_WINDOW_ANIMATOR_CACHE=1 '
@@ -104,6 +104,7 @@ COMMON_CCFLAGS=COMMON_CCFLAGS+' -DWITH_SDL -DHAS_STDIO -DHAVE_STDIO_H -DHAS_GET_
 COMMON_CCFLAGS=COMMON_CCFLAGS+' -DHAS_STD_MALLOC -DTK_MAX_MEM_BLOCK_NR=3 '
 
 #COMMON_CCFLAGS=COMMON_CCFLAGS+' -DTK_MAX_MEM_BLOCK_NR=3 '
+COMMON_CCFLAGS += ' -DTK_DEFAULT_FONT_SIZE=24 '
 
 GRAPHIC_BUFFER='default'
 

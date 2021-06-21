@@ -561,7 +561,7 @@ class AppHelperBase:
         
         env['SConscript'] = env.SConscript
         def variant_SConscript(env, SConscriptFiles):
-            self.SConscript(env['SConscript'], SConscriptFiles)
+            self.SConscript(SConscriptFiles)
         env.AddMethod(variant_SConscript, "SConscript")
     
         self.prepare()
