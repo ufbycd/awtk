@@ -65,6 +65,7 @@ static ret_t candidates_on_button_click(void* ctx, event_t* e) {
           input_method_dispatch_candidates(im, suggest_words->words, suggest_words->words_nr, -1);
           if (suggest_words->words_nr > 0) {
             widget_set_focused(widget_get_child(button->parent, 0), TRUE);
+            candidates->selected = 0;
             candidates->is_suggest = TRUE;
           }
           log_debug("suggest_words->words:%s\n", suggest_words->words);
@@ -182,6 +183,12 @@ static ret_t candidates_update_candidates(widget_t* widget, const char* strs, ui
   return_value_if_fail(candidates != NULL && strs != NULL, RET_BAD_PARAMS);
   return_value_if_fail(candidates_ensure_children(widget, nr + 1) == RET_OK, RET_OOM);
 
+  // 默认选中第一个候选
+  if (nr > 0 && selected == 0 && ! candidates->is_suggest) {
+      selected = 1;
+  }
+
+  candidates->selected = selected;
   children = (widget_t**)(widget->children->elms);
 
   for (i = 0; i < nr; i++) {
@@ -311,29 +318,44 @@ static ret_t candidates_move_focus(widget_t* widget, bool_t next) {
   return_value_if_fail(candidates != NULL, RET_BAD_PARAMS);
   nr = candidates->candidates_nr;
 
-  WIDGET_FOR_EACH_CHILD_BEGIN(widget, iter, i)
-  if (iter->focused) {
-    if (next) {
-      next_focus = i + 1;
-    } else {
-      if (i > 0) {
-        next_focus = i - 1;
-      }
-    }
+  if (next) {
+      next_focus = candidates->selected + 1;
+  } else {
+      next_focus = (candidates->selected > 0) ? candidates->selected - 1 : 0;
   }
-  WIDGET_FOR_EACH_CHILD_END();
 
   next_focus = next_focus % nr;
   focus = widget_get_child(widget, next_focus);
   widget_set_focused(focus, TRUE);
 
+  candidates->selected = next_focus;
+
   return RET_OK;
+}
+
+static ret_t candidates_apply_selected(widget_t* widget) {
+  ret_t ret = RET_OK;
+  widget_t* child = NULL;
+  candidates_t* candidates = CANDIDATES(widget);
+  return_value_if_fail(widget != NULL && candidates != NULL, RET_BAD_PARAMS);
+  int32_t selected = candidates->selected;
+
+  if (selected >= 0 && selected < candidates->candidates_nr) {
+    event_t click = event_init(EVT_CLICK, NULL);
+    child = widget_get_child(widget, selected);
+
+    if (child->text.size > 0 && child->visible) {
+      widget_dispatch(child, &click);
+      ret = RET_STOP;
+    }
+  }
+
+  return ret;
 }
 
 static ret_t candidates_on_keyup(widget_t* widget, key_event_t* e) {
   uint32_t nr = 0;
   ret_t ret = RET_OK;
-  widget_t* child = NULL;
   candidates_t* candidates = CANDIDATES(widget);
   return_value_if_fail(widget != NULL && candidates != NULL, RET_BAD_PARAMS);
   nr = candidates->candidates_nr;
@@ -342,15 +364,8 @@ static ret_t candidates_on_keyup(widget_t* widget, key_event_t* e) {
     if (e->key >= TK_KEY_1 && e->key <= TK_KEY_9 && candidates->select_by_num) {
       int32_t i = e->key - (int32_t)TK_KEY_0 - 1;
 
-      if (i >= 0 && i < nr) {
-        event_t click = event_init(EVT_CLICK, NULL);
-        child = widget_get_child(widget, i);
-
-        if (child->text.size > 0 && child->visible) {
-          widget_dispatch(child, &click);
-          ret = RET_STOP;
-        }
-      }
+      candidates->selected = i;
+      ret = candidates_apply_selected(widget);
     } else if (e->key == TK_KEY_LEFT || e->key == TK_KEY_RIGHT) {
       if (nr > 2) {
         candidates_move_focus(widget, e->key == TK_KEY_RIGHT);
@@ -362,6 +377,13 @@ static ret_t candidates_on_keyup(widget_t* widget, key_event_t* e) {
         input_method_dispatch_candidates(input_method(), words, 0, 0);
         ret = RET_STOP;
       }
+    } else if(e->key == TK_KEY_SPACE) {
+      ret = candidates_apply_selected(widget);
+    }
+  } else if (nr == 0) {
+    if(e->key == TK_KEY_SPACE) {
+      const char *text = " ";
+      ret = input_method_commit_text(input_method(), text);
     }
   }
 
@@ -413,6 +435,7 @@ widget_t* candidates_create(widget_t* parent, xy_t x, xy_t y, wh_t w, wh_t h) {
   return_value_if_fail(candidates != NULL, NULL);
 
   candidates->select_by_num = TRUE;
+  candidates->selected = 0;
   candidates->hscrollable = hscrollable_create(widget);
   hscrollable_set_always_scrollable(candidates->hscrollable, TRUE);
 

@@ -161,6 +161,7 @@ ret_t input_engine_input(input_engine_t* engine, int key) {
       engine->keys.str[engine->keys.size] = '\0';
     } else {
       input_engine_reset_input(engine);
+      input_engine_dispatch_candidates(engine, 0);
       return RET_FAIL;
     }
   } else {

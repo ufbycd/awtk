@@ -98,7 +98,7 @@ typedef struct _candidates_t {
   uint32_t event_id;
   hscrollable_t* hscrollable;
   uint32_t candidates_nr;
-
+  int32_t selected;
   bool_t is_suggest;
 } candidates_t;
 
