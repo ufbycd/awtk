@@ -201,8 +201,9 @@ elif OS_NAME == 'Linux':
     OS_FLAGS = OS_FLAGS + ' -DWITH_64BIT_CPU '
 
   OS_LINKFLAGS=' -Wl,-rpath=./bin -Wl,-rpath=./ '
-  AWTK_DLL_DEPS_LIBS = NANOVG_BACKEND_LIBS + ['SDL2', 'glad'] + OS_LIBS
+  AWTK_DLL_DEPS_LIBS = AWTK_STATIC_LIBS + NANOVG_BACKEND_LIBS + ['SDL2', 'glad'] + OS_LIBS
   OS_WHOLE_ARCHIVE =' -Wl,--whole-archive -lawtk_global -lextwidgets -lwidgets -lbase -lgpinyin -lstreams -lconf_io -lhal -lcsv -lubjson -lcompressors -lfribidi -lmbedtls -lminiz -ltkc_static -llinebreak -Wl,--no-whole-archive'
+  OS_WHOLE_ARCHIVE += ' -Wl,--allow-multiple-definition '
 
 elif OS_NAME == 'Windows':
   if not os.path.exists(os.path.abspath(TK_BIN_DIR)) :
