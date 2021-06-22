@@ -184,7 +184,7 @@ static ret_t candidates_update_candidates(widget_t* widget, const char* strs, ui
   return_value_if_fail(candidates_ensure_children(widget, nr + 1) == RET_OK, RET_OOM);
 
   // 默认选中第一个候选
-  if (nr > 0 && selected == 0 && ! candidates->is_suggest) {
+  if (nr > 1 && selected == 0 && ! candidates->is_suggest) {
       selected = 1;
   }
 
@@ -360,12 +360,14 @@ static ret_t candidates_on_keyup(widget_t* widget, key_event_t* e) {
   return_value_if_fail(widget != NULL && candidates != NULL, RET_BAD_PARAMS);
   nr = candidates->candidates_nr;
 
-  if (nr > 1) {
+  if (nr > 0) {
     if (e->key >= TK_KEY_1 && e->key <= TK_KEY_9 && candidates->select_by_num) {
       int32_t i = e->key - (int32_t)TK_KEY_0 - 1;
 
-      candidates->selected = i;
-      ret = candidates_apply_selected(widget);
+      if (i < nr) {
+        candidates->selected = i;
+        ret = candidates_apply_selected(widget);
+      }
     } else if (e->key == TK_KEY_LEFT || e->key == TK_KEY_RIGHT) {
       if (nr > 2) {
         candidates_move_focus(widget, e->key == TK_KEY_RIGHT);
@@ -382,8 +384,7 @@ static ret_t candidates_on_keyup(widget_t* widget, key_event_t* e) {
     }
   } else if (nr == 0) {
     if(e->key == TK_KEY_SPACE) {
-      const char *text = " ";
-      ret = input_method_commit_text(input_method(), text);
+      ret = input_method_commit_text(input_method(), " ");
     }
   }
 
