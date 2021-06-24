@@ -382,9 +382,10 @@ static ret_t candidates_on_keyup(widget_t* widget, key_event_t* e) {
     } else if(e->key == TK_KEY_SPACE) {
       ret = candidates_apply_selected(widget);
     }
-  } else if (nr == 0) {
+  } {
     if(e->key == TK_KEY_SPACE) {
-      ret = input_method_commit_text(input_method(), " ");
+      input_method_commit_text(input_method(), " ");
+      ret = RET_STOP;
     }
   }
 

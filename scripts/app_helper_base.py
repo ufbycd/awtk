@@ -559,7 +559,6 @@ class AppHelperBase:
                 OS_SUBSYSTEM_CONSOLE=awtk.OS_SUBSYSTEM_CONSOLE,
                 OS_SUBSYSTEM_WINDOWS=awtk.OS_SUBSYSTEM_WINDOWS)
         
-        env['SConscript'] = env.SConscript
         def variant_SConscript(env, SConscriptFiles):
             self.SConscript(SConscriptFiles)
         env.AddMethod(variant_SConscript, "SConscript")
