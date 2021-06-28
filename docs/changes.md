@@ -1,5 +1,10 @@
 # 最新动态
 
+2021/06/28
+  * 增加函数matrix\_transform\_pointf。
+  * 增加一个生成object的框架代码的小工具。
+  * 完善编辑脚本，APP支持输出到不同目录(感谢[ufbycd](https://github.com/ufbycd)提供补丁)。
+
 2021/06/27
   * 修复输入法软键盘判断坐标的问题。
 
