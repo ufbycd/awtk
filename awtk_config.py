@@ -328,7 +328,12 @@ def copySharedLib(src, dst, name):
     if os.path.abspath(src) == os.path.abspath(dst):
         return
     if not os.path.exists(src):
-        print('Can\'t find ' + src + '. Please build '+name+'before!')
+        BUILD_DIR = os.environ.get("BUILD_DIR", "")
+        if BUILD_DIR != "":
+            build_info = ' with parameter: "BUILD_DIR={}"'.format(BUILD_DIR)
+        else:
+            build_info = ''
+        print('Can\'t find {}. Please build {}{} before!'.format(src, name, build_info))
         return
     #print(src + ' ==> ' + dst);
     Script.Command(dst, src, Script.Copy("$TARGET", "$SOURCE"))
