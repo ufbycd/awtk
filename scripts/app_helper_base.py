@@ -163,7 +163,7 @@ class AppHelperBase:
         return self
         
     def SConscript(self, SConscriptFiles):
-        if not self.BUILD_DIR:
+        if not self.BUILD_DIR or os.path.abspath(self.BUILD_DIR) == os.path.abspath('.'):
             Script.SConscript(SConscriptFiles)
         else:
             for sc in SConscriptFiles:
@@ -189,7 +189,7 @@ class AppHelperBase:
         self.AWTK_CFLAGS = self.awtk.CFLAGS
         self.AWTK_CCFLAGS = self.awtk.CCFLAGS
         self.APP_ROOT = APP_ROOT
-        self.BUILD_DIR = ARGUMENTS.get('BUILD_DIR', '')
+        self.BUILD_DIR = ARGUMENTS.get('BUILD_DIR', 'build')
         self.BIN_DIR = os.path.join(self.BUILD_DIR, 'bin')
         self.LIB_DIR = os.path.join(self.BUILD_DIR, 'lib')
         self.APP_BIN_DIR = os.path.join(APP_ROOT, self.BIN_DIR)
@@ -208,6 +208,11 @@ class AppHelperBase:
 
         mkdir_if_not_exist(self.APP_BIN_DIR)
         mkdir_if_not_exist(self.APP_LIB_DIR)
+        if not self.LINUX_FB and len(self.BUILD_DIR) > 0:
+            res_link_path = os.path.join(APP_ROOT, self.BUILD_DIR, 'res')
+            if not os.path.exists(res_link_path):
+                os.symlink('../res/', res_link_path)
+        
 
         os.environ['APP_SRC'] = self.APP_SRC
         os.environ['APP_ROOT'] = self.APP_ROOT
