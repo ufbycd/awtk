@@ -6,7 +6,7 @@ APP_TOOLS = None
 if awtk.TOOLS_NAME != '' :
   APP_TOOLS = [awtk.TOOLS_NAME]
 
-helper = Helper({'BUILD_DIR': awtk.BUILD_DIR})
+helper = Helper(ARGUMENTS)
 awtk.genIdlAndDef();
 DefaultEnvironment(TOOLS = APP_TOOLS,
   CCFLAGS = awtk.AWTK_CCFLAGS,
